@@ -10,7 +10,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "devDependencies": {
     "nodemon": "^3.1.10"
   },
@@ -27,6 +27,7 @@
     "mongoose": "^8.16.1",
     "morgan": "^1.10.0",
     "rate-limit-redis": "^4.2.1",
+    "rate-limiter-flexible": "^7.1.1",
     "winston": "^3.17.0"
   }
 }
