@@ -27,7 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(rateLimiterMiddleware);
 
 // routes with express rate limiter
-app.use("/api/v1/auth", expressLimiter, authRouter);
+app.use("/api/auth", expressLimiter, authRouter);
 
 // error handler
 app.use(errorHandler);
