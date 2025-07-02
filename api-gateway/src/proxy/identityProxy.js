@@ -1,11 +1,9 @@
 import proxy from "express-http-proxy";
 import logger from "../utils/logger.js";
 import proxyOptions from "./proxyOptions.js";
-import dotenv from "dotenv";
+import { IDENTITY_SERVICE_URL } from "../config/config.js";
 
-dotenv.config();
-
-const identityProxy = proxy(process.env.IDENTITY_SERVICE_URL, {
+const identityProxy = proxy(IDENTITY_SERVICE_URL, {
   ...proxyOptions,
   proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
     proxyReqOpts.headers["Content-Type"] = "application/json";
