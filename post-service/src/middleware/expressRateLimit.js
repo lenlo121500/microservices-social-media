@@ -17,12 +17,13 @@ export const globalLimiter = rateLimit({
   },
   store: new RedisStore({
     sendCommand: (...args) => redisClient.call(...args),
+    prefix: "global",
   }),
 });
 
 export const sensitiveLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: 15,
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
@@ -34,5 +35,6 @@ export const sensitiveLimiter = rateLimit({
   },
   store: new RedisStore({
     sendCommand: (...args) => redisClient.call(...args),
+    prefix: "sensitive",
   }),
 });
