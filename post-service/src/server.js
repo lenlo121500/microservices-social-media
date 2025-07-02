@@ -6,6 +6,9 @@ import helmet from "helmet";
 import connectDB from "./config/db.js";
 import postRouter from "./routes/post.route.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import { rateLimiterMiddleware } from "./middleware/rateLimiterRedis.js";
+import { redisClient } from "./middleware/rateLimiterRedis.js";
+
 import logger from "./utils/logger.js";
 
 dotenv.config();
@@ -20,7 +23,16 @@ app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/posts", postRouter);
+app.use(rateLimiterMiddleware);
+
+app.use(
+  "/api/posts",
+  (req, res, next) => {
+    req.redisClient = redisClient;
+    next();
+  },
+  postRouter
+);
 
 app.use(errorHandler);
 
