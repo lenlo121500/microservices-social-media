@@ -1,16 +1,21 @@
-import dotenv from "dotenv";
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 import expressLimiter from "./middleware/expressRateLimit.js";
 import logger from "./utils/logger.js";
-import indentityProxyRouter from "./proxy/index.js";
+import identityProxy from "./proxy/identityProxy.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import validateToken from "./middleware/auth.middleware.js";
+import postProxyRouter from "./proxy/postProxy.js";
+import {
+  IDENTITY_SERVICE_URL,
+  PORT,
+  POST_SERVICE_URL,
+  REDIS_URL,
+} from "./config/config.js";
 
-dotenv.config();
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
@@ -26,14 +31,16 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/v1/auth", indentityProxyRouter);
+app.use("/v1/auth", identityProxy);
+app.use("/v1/posts", validateToken, postProxyRouter);
 
 app.use(errorHandler);
 
 app.listen(PORT, () => {
   logger.info(`API Gateway is running on http://localhost:${PORT}`);
-  logger.info(`Identity Service URL: ${process.env.IDENTITY_SERVICE_URL}`);
-  logger.info(`Redis URL: ${process.env.REDIS_URL}`);
+  logger.info(`Identity Service URL: ${IDENTITY_SERVICE_URL}`);
+  logger.info(`Post Service URL: ${POST_SERVICE_URL}`);
+  logger.info(`Redis URL: ${REDIS_URL}`);
 });
 
 process.on("unhandledRejection", (err) => {
