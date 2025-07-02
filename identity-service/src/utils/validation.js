@@ -10,3 +10,11 @@ export const validateRegisterSchema = (data) => {
   });
   return schema.validate(data);
 };
+
+export const validateLoginSchema = (data) => {
+  const schema = joi.object({
+    email: joi.string().email().required(),
+    password: joi.string().required().min(8),
+  });
+  return schema.validate(data);
+};
