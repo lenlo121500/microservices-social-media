@@ -1,18 +1,20 @@
 import logger from "../utils/logger.js";
 import APIError from "../utils/APIError.js";
 import uploadToCloudinary from "../utils/cloudinary.js";
+import Media from "../models/media.model.js";
 
 export const uploadMedia = async (req, res, next) => {
   logger.info("Upload media controller hit...");
   try {
+    console.log(req.file);
     if (!req.file) {
       throw new APIError(400, "No file uploaded");
     }
 
-    const { originalName, mimeType } = req.file;
+    const { originalname, mimetype } = req.file;
     const userId = req.user.userId;
 
-    logger.info(`File uploaded: ${originalName}, type: (${mimeType})`);
+    logger.info(`File uploaded: ${originalname}, type: (${mimetype})`);
     logger.info(`Uploading to cloudinary...`);
 
     const cloudinaryResult = await uploadToCloudinary(req.file);
@@ -22,8 +24,8 @@ export const uploadMedia = async (req, res, next) => {
 
     const newMedia = new Media({
       publicId: cloudinaryResult.public_id,
-      originalName,
-      mimeType,
+      originalName: originalname,
+      mimeType: mimetype,
       url: cloudinaryResult.secure_url,
       userId,
     });

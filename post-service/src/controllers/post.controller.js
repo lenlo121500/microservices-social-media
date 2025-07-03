@@ -5,7 +5,7 @@ import {
   validateCreatePostSchema,
   validateUpdatePostSchema,
 } from "../utils/validation.js";
-import { redisClient } from "../middleware/rateLimiterRedis.js";
+
 
 async function invalidatePostCache(req, input) {
   const cacheKey = `post:${input}`;
