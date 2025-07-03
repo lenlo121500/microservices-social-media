@@ -10,6 +10,8 @@ import { errorHandler } from "./middleware/errorHandler.js";
 import mediaRouter from "./routes/media.route.js";
 import expressLimiter from "./middleware/expressRateLimit.js";
 
+import connectDB from "./config/db.js";
+
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3003;
@@ -28,7 +30,8 @@ app.use("/api/media", mediaRouter);
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  await connectDB();
   logger.info(`Media Service is running on http://localhost:${PORT}`);
 });
 
