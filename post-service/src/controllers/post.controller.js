@@ -1,10 +1,15 @@
 import logger from "../utils/logger.js";
 import Post from "../models/post.model.js";
 import APIError from "../utils/APIError.js";
-import { validateCreatePostSchema, validateUpdatePostSchema } from "../utils/validation.js";
+import {
+  validateCreatePostSchema,
+  validateUpdatePostSchema,
+} from "../utils/validation.js";
 import { redisClient } from "../middleware/rateLimiterRedis.js";
 
 async function invalidatePostCache(req, input) {
+  const cacheKey = `post:${input}`;
+  await req.redisClient.del(cacheKey);
   const keys = await req.redisClient.keys(`posts:*`);
   if (keys.length > 0) {
     await req.redisClient.del(keys);
@@ -136,13 +141,19 @@ export const updatePost = async (req, res, next) => {
 export const deletePost = async (req, res, next) => {
   logger.info("Delete post controller hit...");
   try {
-    const postId = req.params.id;
-    const post = await Post.findByIdAndDelete(postId);
+    const post = await Post.findByIdAndDelete({
+      _id: req.params.id,
+      user: req.user.userId,
+    });
     if (!post) {
       throw new APIError(404, "Post not found");
     }
-    await invalidatePostCache(req, postId);
-    res.json({ success: true, message: "Post deleted successfully" });
+
+    await invalidatePostCache(req, req.params.id);
+    res.status(200).json({
+      success: true,
+      message: "Post deleted successfully",
+    });
   } catch (error) {
     logger.error("Error in delete post controller", error);
     next(error);
