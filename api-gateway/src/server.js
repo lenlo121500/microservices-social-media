@@ -10,10 +10,12 @@ import validateToken from "./middleware/auth.middleware.js";
 import postProxyRouter from "./proxy/postProxy.js";
 import {
   IDENTITY_SERVICE_URL,
+  MEDIA_SERVICE_URL,
   PORT,
   POST_SERVICE_URL,
   REDIS_URL,
 } from "./config/config.js";
+import mediaProxy from "./proxy/mediaProxy.js";
 
 const app = express();
 
@@ -33,6 +35,7 @@ app.use((req, res, next) => {
 
 app.use("/v1/auth", identityProxy);
 app.use("/v1/posts", validateToken, postProxyRouter);
+app.use("/v1/media", validateToken, mediaProxy);
 
 app.use(errorHandler);
 
@@ -40,6 +43,7 @@ app.listen(PORT, () => {
   logger.info(`API Gateway is running on http://localhost:${PORT}`);
   logger.info(`Identity Service URL: ${IDENTITY_SERVICE_URL}`);
   logger.info(`Post Service URL: ${POST_SERVICE_URL}`);
+  logger.info(`Media Service URL: ${MEDIA_SERVICE_URL}`);
   logger.info(`Redis URL: ${REDIS_URL}`);
 });
 
