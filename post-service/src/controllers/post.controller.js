@@ -5,7 +5,7 @@ import {
   validateCreatePostSchema,
   validateUpdatePostSchema,
 } from "../utils/validation.js";
-
+import { publishEvent } from "../utils/rabbitmq.js";
 
 async function invalidatePostCache(req, input) {
   const cacheKey = `post:${input}`;
@@ -149,6 +149,12 @@ export const deletePost = async (req, res, next) => {
       throw new APIError(404, "Post not found");
     }
 
+    // publish post delete method
+    await publishEvent("post.deleted", {
+      postId: post._id.toString(),
+      userId: req.user.userId,
+      mediaIds: post.mediaIds,
+    });
     await invalidatePostCache(req, req.params.id);
     res.status(200).json({
       success: true,

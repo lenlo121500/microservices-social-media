@@ -10,6 +10,7 @@ import { rateLimiterMiddleware } from "./middleware/rateLimiterRedis.js";
 import { redisClient } from "./middleware/rateLimiterRedis.js";
 
 import logger from "./utils/logger.js";
+import { connectRabbitMQ } from "./utils/rabbitmq.js";
 
 dotenv.config();
 
@@ -36,10 +37,20 @@ app.use(
 
 app.use(errorHandler);
 
-app.listen(PORT, async () => {
-  await connectDB();
-  logger.info(`Server running on http://localhost:${PORT}`);
-});
+async function startServer() {
+  try {
+    await connectRabbitMQ();
+    await connectDB();
+    app.listen(PORT, () => {
+      logger.info(`Server is running on port ${PORT}`);
+    });
+  } catch (error) {
+    logger.error(error);
+    process.exit(1);
+  }
+}
+
+startServer();
 
 process.on("unhandledRejection", (reason, message) => {
   logger.error(`Unhandled Rejection at: ${message} reason: ${reason}`);
