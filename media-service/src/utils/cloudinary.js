@@ -12,7 +12,7 @@ cloudinary.config({
   api_secret: CLOUDINARY_API_SECRET,
 });
 
-const uploadToCloudinary = (file) => {
+export const uploadToCloudinary = (file) => {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
@@ -32,4 +32,13 @@ const uploadToCloudinary = (file) => {
   });
 };
 
-export default uploadToCloudinary;
+export const deleteMediaFromCloudinary = async (publicId) => {
+  try {
+    const result = await cloudinary.uploader.destroy(publicId);
+    logger.info(`Cloudinary deleted successfully! Public id: ${publicId}`);
+    return result;
+  } catch (error) {
+    logger.error(`Error in cloudinary delete: ${error.message}`);
+    throw error;
+  }
+};

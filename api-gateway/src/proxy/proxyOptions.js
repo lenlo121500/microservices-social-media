@@ -4,13 +4,18 @@ const proxyOptions = {
   proxyReqPathResolver: (req) => {
     return req.originalUrl.replace(/^\/v1/, "/api");
   },
-  proxyErrorHandler: (err, req, res) => {
+  proxyErrorHandler: (err, res, next) => {
     logger.error(`Proxy error: ${err.message}`);
-    res.status(500).json({
-      success: false,
-      message: `Internal server error`,
-      error: err.message,
+    res.writeHead(500, {
+      "Content-Type": "application/json",
     });
+    res.end(
+      JSON.stringify({
+        success: false,
+        message: "Internal server error",
+        error: err.message,
+      })
+    );
   },
 };
 

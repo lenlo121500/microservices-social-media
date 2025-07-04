@@ -1,7 +1,7 @@
 import express from "express";
 import authenticateRequest from "../middleware/auth.middleware.js";
 import logger from "../utils/logger.js";
-import { uploadMedia } from "../controllers/media.controller.js";
+import { getAllMedias, uploadMedia } from "../controllers/media.controller.js";
 import multer from "multer";
 
 const mediaRouter = express.Router();
@@ -21,8 +21,6 @@ mediaRouter.post(
   "/upload",
   authenticateRequest,
   (req, res, next) => {
-    console.log("Content-Type:", req.headers["content-type"]);
-    console.log("Request headers:", req.headers);
     upload(req, res, function (err) {
       if (err instanceof multer.MulterError) {
         logger.error("Multer error while uploading:", err);
@@ -51,5 +49,7 @@ mediaRouter.post(
   },
   uploadMedia
 );
+
+mediaRouter.get("/", authenticateRequest, getAllMedias);
 
 export default mediaRouter;

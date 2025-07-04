@@ -1,6 +1,6 @@
 import logger from "../utils/logger.js";
 import APIError from "../utils/APIError.js";
-import uploadToCloudinary from "../utils/cloudinary.js";
+import { uploadToCloudinary } from "../utils/cloudinary.js";
 import Media from "../models/media.model.js";
 
 export const uploadMedia = async (req, res, next) => {
@@ -40,6 +40,17 @@ export const uploadMedia = async (req, res, next) => {
     });
   } catch (error) {
     logger.error(`Error in upload media controller`, error);
+    next(error);
+  }
+};
+
+export const getAllMedias = async (req, res, next) => {
+  logger.info("Get all medias controller hit...");
+  try {
+    const medias = await Media.find({ userId: req.user.userId });
+    res.status(200).json({ success: true, medias });
+  } catch (error) {
+    logger.error(`Error in get all medias controller`, error);
     next(error);
   }
 };
