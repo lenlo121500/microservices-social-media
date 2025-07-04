@@ -2,8 +2,9 @@ import rateLimit from "express-rate-limit";
 import RedisStore from "rate-limit-redis";
 import logger from "../utils/logger.js";
 import Redis from "ioredis";
+import { REDIS_URL } from "../config/config.js";
 
-const redisClient = new Redis(process.env.REDIS_URL);
+const redisClient = new Redis(REDIS_URL);
 
 const expressLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,

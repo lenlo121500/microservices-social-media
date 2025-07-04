@@ -1,4 +1,3 @@
-// src/config.js
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -11,4 +10,5 @@ export const {
   CLOUDINARY_API_SECRET,
   MONGODB_URI,
   REDIS_URL,
+  RABBITMQ_URL,
 } = process.env;

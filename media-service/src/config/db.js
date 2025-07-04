@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
 import logger from "../utils/logger.js";
+import { MONGODB_URI } from "./config.js";
 
 let isConnected = false;
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI);
+    const conn = await mongoose.connect(MONGODB_URI);
 
     isConnected = true;
     logger.info(`MongoDB connected: ${conn.connection.host}`);
