@@ -7,56 +7,36 @@ services:
       - "3000:3000"
     env_file: ./api-gateway/.env
     depends_on:
-      - redis
       - rabbitmq
-    environment:
-      - REDIS_URL=redis-17138.c10.us-east-1-4.ec2.redns.redis-cloud.com:17138
-      - RABBITMQ_URL=amqps://kasovzdq:ns0u_NutiNNtWWZY259qcKzZekaZYdry@fuji.lmq.cloudamqp.com/kasovzdq
+    restart: unless-stopped
 
   identity-service:
     build: ./identity-service
     env_file: ./identity-service/.env
     depends_on:
-      - redis
       - rabbitmq
-    environment:
-      - REDIS_URL=redis-17138.c10.us-east-1-4.ec2.redns.redis-cloud.com:17138
-      - RABBITMQ_URL=amqps://kasovzdq:ns0u_NutiNNtWWZY259qcKzZekaZYdry@fuji.lmq.cloudamqp.com/kasovzdq
+    restart: unless-stopped
 
   post-service:
     build: ./post-service
     env_file: ./post-service/.env
     depends_on:
-      - redis
       - rabbitmq
-    environment:
-      - REDIS_URL=redis-17138.c10.us-east-1-4.ec2.redns.redis-cloud.com:17138
-      - RABBITMQ_URL=amqps://kasovzdq:ns0u_NutiNNtWWZY259qcKzZekaZYdry@fuji.lmq.cloudamqp.com/kasovzdq
+    restart: unless-stopped
 
   media-service:
     build: ./media-service
     env_file: ./media-service/.env
     depends_on:
-      - redis
       - rabbitmq
-    environment:
-      - REDIS_URL=redis-17138.c10.us-east-1-4.ec2.redns.redis-cloud.com:17138
-      - RABBITMQ_URL=amqps://kasovzdq:ns0u_NutiNNtWWZY259qcKzZekaZYdry@fuji.lmq.cloudamqp.com/kasovzdq
+    restart: unless-stopped
 
   search-service:
     build: ./search-service
     env_file: ./search-service/.env
     depends_on:
-      - redis
       - rabbitmq
-    environment:
-      - REDIS_URL=redis-17138.c10.us-east-1-4.ec2.redns.redis-cloud.com:17138
-      - RABBITMQ_URL=amqps://kasovzdq:ns0u_NutiNNtWWZY259qcKzZekaZYdry@fuji.lmq.cloudamqp.com/kasovzdq
-
-  redis:
-    image: redis:alpine
-    ports:
-      - "6379:6379"
+    restart: unless-stopped
 
   rabbitmq:
     image: rabbitmq:3-management
