@@ -10,8 +10,8 @@ services:
       - redis
       - rabbitmq
     environment:
-      - REDIS_URL=redis://redis:6379
-      - RABBITMQ_URL=amqp://rabbitmq:5672
+      - REDIS_URL=redis-17138.c10.us-east-1-4.ec2.redns.redis-cloud.com:17138
+      - RABBITMQ_URL=amqps://kasovzdq:ns0u_NutiNNtWWZY259qcKzZekaZYdry@fuji.lmq.cloudamqp.com/kasovzdq
 
   identity-service:
     build: ./identity-service
@@ -20,8 +20,8 @@ services:
       - redis
       - rabbitmq
     environment:
-      - REDIS_URL=redis://redis:6379
-      - RABBITMQ_URL=amqp://rabbitmq:5672
+      - REDIS_URL=redis-17138.c10.us-east-1-4.ec2.redns.redis-cloud.com:17138
+      - RABBITMQ_URL=amqps://kasovzdq:ns0u_NutiNNtWWZY259qcKzZekaZYdry@fuji.lmq.cloudamqp.com/kasovzdq
 
   post-service:
     build: ./post-service
@@ -30,8 +30,8 @@ services:
       - redis
       - rabbitmq
     environment:
-      - REDIS_URL=redis://redis:6379
-      - RABBITMQ_URL=amqp://rabbitmq:5672
+      - REDIS_URL=redis-17138.c10.us-east-1-4.ec2.redns.redis-cloud.com:17138
+      - RABBITMQ_URL=amqps://kasovzdq:ns0u_NutiNNtWWZY259qcKzZekaZYdry@fuji.lmq.cloudamqp.com/kasovzdq
 
   media-service:
     build: ./media-service
@@ -40,8 +40,8 @@ services:
       - redis
       - rabbitmq
     environment:
-      - REDIS_URL=redis://redis:6379
-      - RABBITMQ_URL=amqp://rabbitmq:5672
+      - REDIS_URL=redis-17138.c10.us-east-1-4.ec2.redns.redis-cloud.com:17138
+      - RABBITMQ_URL=amqps://kasovzdq:ns0u_NutiNNtWWZY259qcKzZekaZYdry@fuji.lmq.cloudamqp.com/kasovzdq
 
   search-service:
     build: ./search-service
@@ -50,8 +50,8 @@ services:
       - redis
       - rabbitmq
     environment:
-      - REDIS_URL=redis://redis:6379
-      - RABBITMQ_URL=amqp://rabbitmq:5672
+      - REDIS_URL=redis-17138.c10.us-east-1-4.ec2.redns.redis-cloud.com:17138
+      - RABBITMQ_URL=amqps://kasovzdq:ns0u_NutiNNtWWZY259qcKzZekaZYdry@fuji.lmq.cloudamqp.com/kasovzdq
 
   redis:
     image: redis:alpine
