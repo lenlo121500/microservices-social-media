@@ -1,0 +1,26 @@
+name: Deploy to Render
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy API Gateway
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_GATEWAY }}
+
+      - name: Deploy Identity Service
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_IDENTITY }}
+
+      - name: Deploy Post Service
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_POST }}
+
+      - name: Deploy Media Service
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_MEDIA }}
+
+      - name: Deploy Search Service
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_SEARCH }}
