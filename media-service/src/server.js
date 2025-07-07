@@ -25,6 +25,11 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(expressLimiter);
 
+// health check
+app.get("/health", (req, res) => {
+  res.status(200).json({ success: true, message: "Healthy" });
+});
+
 // routes with express rate limiter
 app.use("/api/media", mediaRouter);
 

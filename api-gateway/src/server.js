@@ -35,6 +35,11 @@ app.use((req, res, next) => {
   next();
 });
 
+// health check
+app.get("/health", (req, res) => {
+  res.status(200).json({ success: true, message: "Healthy" });
+});
+
 app.use("/v1/auth", identityProxy);
 app.use("/v1/posts", validateToken, postProxyRouter);
 app.use("/v1/media", validateToken, mediaProxy);

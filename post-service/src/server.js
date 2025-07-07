@@ -26,6 +26,11 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(rateLimiterMiddleware);
 
+// health check
+app.get("/health", (req, res) => {
+  res.status(200).json({ success: true, message: "Healthy" });
+});
+
 app.use(
   "/api/posts",
   (req, res, next) => {
