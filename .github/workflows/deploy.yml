@@ -11,61 +11,167 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          # Fetch enough history for git diff to work
+          fetch-depth: 2
 
       - name: Get Changed Files
         id: changes
         run: |
-          echo "::group::Changed files"
-          git fetch origin main
-          CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+          echo "::group::Getting changed files"
+
+          # Handle different scenarios
+          if [ "${{ github.event.before }}" == "0000000000000000000000000000000000000000" ]; then
+            echo "Initial commit detected - deploying all services"
+            CHANGED="api-gateway/ identity-service/ post-service/ media-service/ search-service/"
+          elif [ -z "${{ github.event.before }}" ]; then
+            echo "No previous commit - comparing with HEAD~1"
+            CHANGED=$(git diff --name-only HEAD~1 HEAD || echo "api-gateway/ identity-service/ post-service/ media-service/ search-service/")
+          else
+            echo "Comparing ${{ github.event.before }} with ${{ github.sha }}"
+            CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} || echo "")
+          fi
+
+          echo "Changed files:"
           echo "$CHANGED"
           echo "$CHANGED" > changed_files.txt
           echo "::endgroup::"
 
-      - name: Read Changes and Set Flags
+      - name: Set Deployment Flags
         id: setflags
         run: |
           CHANGED=$(cat changed_files.txt)
 
+          echo "::group::Setting deployment flags"
+
+          # Initialize all flags to false
           echo "deploy_gateway=false" >> $GITHUB_ENV
           echo "deploy_identity=false" >> $GITHUB_ENV
           echo "deploy_post=false" >> $GITHUB_ENV
           echo "deploy_media=false" >> $GITHUB_ENV
           echo "deploy_search=false" >> $GITHUB_ENV
 
+          # Check for changes in each service
           if echo "$CHANGED" | grep -q "^api-gateway/"; then
+            echo "✅ API Gateway changed - will deploy"
             echo "deploy_gateway=true" >> $GITHUB_ENV
+          else
+            echo "❌ API Gateway unchanged - skipping"
           fi
+
           if echo "$CHANGED" | grep -q "^identity-service/"; then
+            echo "✅ Identity Service changed - will deploy"
             echo "deploy_identity=true" >> $GITHUB_ENV
+          else
+            echo "❌ Identity Service unchanged - skipping"
           fi
+
           if echo "$CHANGED" | grep -q "^post-service/"; then
+            echo "✅ Post Service changed - will deploy"
             echo "deploy_post=true" >> $GITHUB_ENV
+          else
+            echo "❌ Post Service unchanged - skipping"
           fi
+
           if echo "$CHANGED" | grep -q "^media-service/"; then
+            echo "✅ Media Service changed - will deploy"
             echo "deploy_media=true" >> $GITHUB_ENV
+          else
+            echo "❌ Media Service unchanged - skipping"
           fi
+
           if echo "$CHANGED" | grep -q "^search-service/"; then
+            echo "✅ Search Service changed - will deploy"
             echo "deploy_search=true" >> $GITHUB_ENV
+          else
+            echo "❌ Search Service unchanged - skipping"
           fi
+
+          echo "::endgroup::"
 
       - name: Deploy API Gateway
         if: env.deploy_gateway == 'true'
-        run: curl -X POST ${{ secrets.RENDER_DEPLOY_GATEWAY }}
+        run: |
+          echo "🚀 Deploying API Gateway..."
+          curl -X POST "${{ secrets.RENDER_DEPLOY_GATEWAY }}" \
+            -H "Accept: application/json" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            --fail-with-body \
+            --retry 3 \
+            --retry-delay 5 || {
+              echo "❌ Failed to deploy API Gateway"
+              exit 1
+            }
+          echo "✅ API Gateway deployed successfully"
 
       - name: Deploy Identity Service
         if: env.deploy_identity == 'true'
-        run: curl -X POST ${{ secrets.RENDER_DEPLOY_IDENTITY }}
+        run: |
+          echo "🚀 Deploying Identity Service..."
+          curl -X POST "${{ secrets.RENDER_DEPLOY_IDENTITY }}" \
+            -H "Accept: application/json" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            --fail-with-body \
+            --retry 3 \
+            --retry-delay 5 || {
+              echo "❌ Failed to deploy Identity Service"
+              exit 1
+            }
+          echo "✅ Identity Service deployed successfully"
 
       - name: Deploy Post Service
         if: env.deploy_post == 'true'
-        run: curl -X POST ${{ secrets.RENDER_DEPLOY_POST }}
+        run: |
+          echo "🚀 Deploying Post Service..."
+          curl -X POST "${{ secrets.RENDER_DEPLOY_POST }}" \
+            -H "Accept: application/json" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            --fail-with-body \
+            --retry 3 \
+            --retry-delay 5 || {
+              echo "❌ Failed to deploy Post Service"
+              exit 1
+            }
+          echo "✅ Post Service deployed successfully"
 
       - name: Deploy Media Service
         if: env.deploy_media == 'true'
-        run: curl -X POST ${{ secrets.RENDER_DEPLOY_MEDIA }}
+        run: |
+          echo "🚀 Deploying Media Service..."
+          curl -X POST "${{ secrets.RENDER_DEPLOY_MEDIA }}" \
+            -H "Accept: application/json" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            --fail-with-body \
+            --retry 3 \
+            --retry-delay 5 || {
+              echo "❌ Failed to deploy Media Service"
+              exit 1
+            }
+          echo "✅ Media Service deployed successfully"
 
       - name: Deploy Search Service
         if: env.deploy_search == 'true'
-        run: curl -X POST ${{ secrets.RENDER_DEPLOY_SEARCH }}
+        run: |
+          echo "🚀 Deploying Search Service..."
+          curl -X POST "${{ secrets.RENDER_DEPLOY_SEARCH }}" \
+            -H "Accept: application/json" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            --fail-with-body \
+            --retry 3 \
+            --retry-delay 5 || {
+              echo "❌ Failed to deploy Search Service"
+              exit 1
+            }
+          echo "✅ Search Service deployed successfully"
+
+      - name: Deployment Summary
+        if: always()
+        run: |
+          echo "::group::Deployment Summary"
+          echo "API Gateway: ${{ env.deploy_gateway }}"
+          echo "Identity Service: ${{ env.deploy_identity }}"
+          echo "Post Service: ${{ env.deploy_post }}"
+          echo "Media Service: ${{ env.deploy_media }}"
+          echo "Search Service: ${{ env.deploy_search }}"
+          echo "::endgroup::"
