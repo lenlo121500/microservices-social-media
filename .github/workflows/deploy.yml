@@ -1,4 +1,4 @@
-name: Deploy to Render
+name: Deploy Changed Services to Render
 
 on:
   push:
@@ -10,17 +10,62 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Get Changed Files
+        id: changes
+        run: |
+          echo "::group::Changed files"
+          git fetch origin main
+          CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+          echo "$CHANGED"
+          echo "$CHANGED" > changed_files.txt
+          echo "::endgroup::"
+
+      - name: Read Changes and Set Flags
+        id: setflags
+        run: |
+          CHANGED=$(cat changed_files.txt)
+
+          echo "deploy_gateway=false" >> $GITHUB_ENV
+          echo "deploy_identity=false" >> $GITHUB_ENV
+          echo "deploy_post=false" >> $GITHUB_ENV
+          echo "deploy_media=false" >> $GITHUB_ENV
+          echo "deploy_search=false" >> $GITHUB_ENV
+
+          if echo "$CHANGED" | grep -q "^api-gateway/"; then
+            echo "deploy_gateway=true" >> $GITHUB_ENV
+          fi
+          if echo "$CHANGED" | grep -q "^identity-service/"; then
+            echo "deploy_identity=true" >> $GITHUB_ENV
+          fi
+          if echo "$CHANGED" | grep -q "^post-service/"; then
+            echo "deploy_post=true" >> $GITHUB_ENV
+          fi
+          if echo "$CHANGED" | grep -q "^media-service/"; then
+            echo "deploy_media=true" >> $GITHUB_ENV
+          fi
+          if echo "$CHANGED" | grep -q "^search-service/"; then
+            echo "deploy_search=true" >> $GITHUB_ENV
+          fi
+
       - name: Deploy API Gateway
+        if: env.deploy_gateway == 'true'
         run: curl -X POST ${{ secrets.RENDER_DEPLOY_GATEWAY }}
 
       - name: Deploy Identity Service
+        if: env.deploy_identity == 'true'
         run: curl -X POST ${{ secrets.RENDER_DEPLOY_IDENTITY }}
 
       - name: Deploy Post Service
+        if: env.deploy_post == 'true'
         run: curl -X POST ${{ secrets.RENDER_DEPLOY_POST }}
 
       - name: Deploy Media Service
+        if: env.deploy_media == 'true'
         run: curl -X POST ${{ secrets.RENDER_DEPLOY_MEDIA }}
 
       - name: Deploy Search Service
+        if: env.deploy_search == 'true'
         run: curl -X POST ${{ secrets.RENDER_DEPLOY_SEARCH }}
