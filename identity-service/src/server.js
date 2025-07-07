@@ -26,6 +26,11 @@ app.use(express.urlencoded({ extended: true }));
 // redis rate limiter middleware
 app.use(rateLimiterMiddleware);
 
+// health check
+app.get("/health", (req, res) => {
+  res.status(200).json({ success: true, message: "Healthy" });
+});
+
 // routes with express rate limiter
 app.use("/api/auth", expressLimiter, authRouter);
 
