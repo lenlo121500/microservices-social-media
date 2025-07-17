@@ -7,6 +7,7 @@ export const generateTokens = async (user) => {
     {
       userId: user._id,
       username: user.username,
+      role: user.role,
     },
     process.env.JWT_SECRET,
     { expiresIn: "15m" }

@@ -11,6 +11,7 @@ import logger from "./utils/logger.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { rateLimiterMiddleware } from "./middleware/rateLimiterRedis.js";
 import expressLimiter from "./middleware/expressRateLimit.js";
+import userRouter from "./routes/user.route.js";
 
 dotenv.config();
 const app = express();
@@ -33,6 +34,7 @@ app.get("/health", (req, res) => {
 
 // routes with express rate limiter
 app.use("/api/auth", expressLimiter, authRouter);
+app.use("/api/users", expressLimiter, userRouter);
 
 // error handler
 app.use(errorHandler);
