@@ -41,6 +41,7 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/v1/auth", identityProxy);
+app.use("/v1/users", validateToken, identityProxy);
 app.use("/v1/posts", validateToken, postProxyRouter);
 app.use("/v1/media", validateToken, mediaProxy);
 app.use("/v1/search", validateToken, searchProxy);
@@ -52,7 +53,7 @@ app.listen(PORT, () => {
   logger.info(`Identity Service URL: ${IDENTITY_SERVICE_URL}`);
   logger.info(`Post Service URL: ${POST_SERVICE_URL}`);
   logger.info(`Media Service URL: ${MEDIA_SERVICE_URL}`);
-  logger.info(`Search Service URL: ${POST_SERVICE_URL}`);
+  logger.info(`Search Service URL: ${SEARCH_SERVICE_URL}`);
   logger.info(`Redis URL: ${REDIS_URL}`);
 });
 

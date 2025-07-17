@@ -1,6 +1,13 @@
-// src/config.js
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config({ path: ".env.dev" });
+
+if (process.env.NODE_ENV === "development") {
+  dotenv.config({ path: ".env.dev" });
+} else if (process.env.NODE_ENV === "staging") {
+  dotenv.config({ path: ".env.staging" });
+} else {
+  dotenv.config(); // Default: production
+}
 
 export const {
   IDENTITY_SERVICE_URL,

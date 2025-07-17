@@ -18,3 +18,13 @@ export const validateLoginSchema = (data) => {
   });
   return schema.validate(data);
 };
+
+export const validateUpdateUserSchema = (data) => {
+  const schema = joi.object({
+    username: joi.string().min(3).max(50).required(),
+    firstName: joi.string().min(3).max(50).required(),
+    lastName: joi.string().min(3).max(50).required(),
+    email: joi.string().email().required(),
+  });
+  return schema.validate(data);
+};
